@@ -12,6 +12,10 @@ import java.io.File
 import java.io.IOException
 
 object runNMF {
+  val conf = new SparkConf().setAppName("GraphNMFApp").setMaster("local")
+  val sc = new SparkContext(conf)
+
+  // TODO: each function should have a comment
   def deleteDir(dir: File) {
     if (dir.isDirectory()) {
       val children: Array[String] = dir.list()
@@ -21,37 +25,37 @@ object runNMF {
     }
     dir.delete()
   }
-  def main(args: Array[String]) {
-    val conf = new SparkConf().setAppName("GraphNMFApp")
-    val sc = new SparkContext(conf)
 
-    def LoaderEdgeFile(
-                        edgesFile: String,
-                        edgminPartitions: Int = 2):Graph[Int, Double] =
-    {
-      val edgesfile =sc.textFile(edgesFile, edgminPartitions)
-      val edges: RDD[Edge[Double]] = edgesfile.map(
-        line => {
-            val edgesfields = line.trim().split("\\s+", 3)
-            Edge(edgesfields(0).toLong, edgesfields(1).toLong, edgesfields(2).toDouble)
+  // TODO: each function should have a comment
+  def LoaderEdgeFile(edgesFile: String,
+    edgminPartitions: Int = 2): Graph[Int, Double] = {
+    val edgesfile = sc.textFile(edgesFile, edgminPartitions)
+    val edges: RDD[Edge[Double]] = edgesfile.map(
+      line => {
+        val edgesfields = line.trim().split("\\s+", 3)
+        Edge(edgesfields(0).toLong, edgesfields(1).toLong, edgesfields(2).toDouble)
 
       }
-      )
-      val defaultVD = 0
-      val nullVert: RDD[(VertexId, Int)] = null
-      Graph.fromEdges(edges, defaultVD, StorageLevel.MEMORY_AND_DISK,
-        StorageLevel.MEMORY_AND_DISK).partitionBy(PartitionStrategy.RandomVertexCut)
-    }
+    )
+    val defaultVD = 0
+    val nullVert: RDD[(VertexId, Int)] = null
+    Graph.fromEdges(edges, defaultVD, StorageLevel.MEMORY_AND_DISK,
+      StorageLevel.MEMORY_AND_DISK).partitionBy(PartitionStrategy.RandomVertexCut)
+  }
+
+  def main(args: Array[String]) {
     //val edgesFile: String = args(0)
     val edgminPartitions: Int = 1
     val reducedDim: Int = 20
-//    val maxIteration: Int = 1
+    //    val maxIteration: Int = 1
 
     val theta: Double = 0.01
     val lambda: Double = 0.1
-//    val output: String = args(1)
+    //    val output: String = args(1)
     val withZeroItems: Int = 0
-    val Seq(edgesFile, output, maxIter) = args.toSeq
+    //val Seq(edgesFile, output, maxIter) = args.toSeq
+    val dir = "E:\\jianguoyun\\my\\code\\scala\\bda\\graphx-alg\\"
+    val Seq(edgesFile, output, maxIter) = Seq(dir + "edges.txt", dir + "a.txt", "10")
     val maxIteration = maxIter.toInt
     //val loader = new GraphLoader(sc)
     val graph: Graph[Int, Double] = LoaderEdgeFile(edgesFile, edgminPartitions)
