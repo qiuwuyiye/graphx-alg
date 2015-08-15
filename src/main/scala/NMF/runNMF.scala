@@ -3,33 +3,23 @@ package NMF
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 import org.apache.spark.storage.StorageLevel
-import org.apache.spark.graphx.util.GraphGenerators
 import org.apache.spark.rdd.RDD
 import org.apache.spark.graphx._
-import java.io.PrintWriter
 import java.util.concurrent.TimeUnit
-import java.io.File
-import java.io.IOException
+
 
 object runNMF {
-  val conf = new SparkConf().setAppName("GraphNMFApp").setMaster("local")
+  val conf = new SparkConf().setAppName("NMF")
   val sc = new SparkContext(conf)
-
-  // TODO: each function should have a comment
-  def deleteDir(dir: File) {
-    if (dir.isDirectory()) {
-      val children: Array[String] = dir.list()
-      for (child <- children) {
-        deleteDir(new File(dir, child))
-      }
-    }
-    dir.delete()
-  }
-
-  // TODO: each function should have a comment
+  /** This function loads an edge file and then return a graph, the format is like:(vertexId vertexId edgeAttr)
+    *
+    * @param edgesFile
+    * @param edgesMinPartitions
+    * @return A Graph
+    */
   def LoaderEdgeFile(edgesFile: String,
-    edgminPartitions: Int = 2): Graph[Int, Double] = {
-    val edgesfile = sc.textFile(edgesFile, edgminPartitions)
+    edgesMinPartitions: Int = 2): Graph[Int, Double] = {
+    val edgesfile = sc.textFile(edgesFile, edgesMinPartitions)
     val edges: RDD[Edge[Double]] = edgesfile.map(
       line => {
         val edgesfields = line.trim().split("\\s+", 3)
@@ -43,42 +33,67 @@ object runNMF {
       StorageLevel.MEMORY_AND_DISK).partitionBy(PartitionStrategy.RandomVertexCut)
   }
 
+  /**Main function
+   *
+   * @param args Read input edge file. output file and the iter_num
+   */
   def main(args: Array[String]) {
-    //val edgesFile: String = args(0)
-    val edgminPartitions: Int = 1
-    val reducedDim: Int = 20
-    //    val maxIteration: Int = 1
+    /**
+     * para decomposition
+     */
 
-    val theta: Double = 0.01
-    val lambda: Double = 0.1
-    //    val output: String = args(1)
-    val withZeroItems: Int = 0
-    //val Seq(edgesFile, output, maxIter) = args.toSeq
-    val dir = "E:\\jianguoyun\\my\\code\\scala\\bda\\graphx-alg\\"
-    val Seq(edgesFile, output, maxIter) = Seq(dir + "edges.txt", dir + "a.txt", "10")
-    val maxIteration = maxIter.toInt
-    //val loader = new GraphLoader(sc)
-    val graph: Graph[Int, Double] = LoaderEdgeFile(edgesFile, edgminPartitions)
+      val parser = new scopt.OptionParser[ParaConfig]("runNMF"){
+      head("NMF", "1.0")
+      opt[String]("edgesFile") optional() action { (x, c) =>
+      c.copy(edgesFile = x)
+      } text ("edgesFile is the input file that includes the graph information")
+      opt[String]("output") optional() action { (x, c) =>
+        c.copy(output = x)
+      } text ("output is the output file that stores two matrix W and H")
+      opt[Int]("reducedDim") optional() action { (x, c) =>
+        c.copy(reducedDim = x)
+      } validate { x => if (x > 0) success else failure("Option --reducedDim must >0")
+      } text ("reduceDim is the factorized dimension which is known as K")
+      opt[Int]("maxIteration") optional() action { (x, c) =>
+        c.copy(maxIteration = x)
+      } validate { x => if (x > 0) success else failure("Option --maxIteration must >0")
+      } text ("maxIteraton is the max Iteration count of this factorization program")
+      opt[Int]("edgesMinPartition") optional() action { (x, c) =>
+        c.copy(edgesMinPartition = x)
+      } validate { x => if (x > 0) success else failure("Option --edgesMinPartition must >0")
+      } text ("edgesMinPartition is the min number of RDD's split parts, default is 2")
+      opt[Double]("reg") optional() action { (x, c) =>
+        c.copy(reg = x)
+      } validate { x => if (x > 0.0) success else failure("Option --reg must >0.0")
+      } text ("reg is the regularization part, default if 0.1")
+      opt[Double]("learnRate") optional() action { (x, c) =>
+        c.copy(learnRate = x)
+      } validate { x => if (x > 0.00) success else failure("Option --learnRate must >0.00")
+      } text("learning rate, default is 0.01")
+    }
+    val para: ParaConfig = parser.parse(args, ParaConfig()).get
+    val edgesMinPartition = para.edgesMinPartition
+    val reducedDim = para.reducedDim
+    val learnRate = para.learnRate
+    val reg = para.reg
+    val edgesFile = para.edgesFile
+    val output = para.output
+    val maxIteration = para.maxIteration
+    val graph: Graph[Int, Double] = LoaderEdgeFile(edgesFile, edgesMinPartition)
 
     val startTime = System.nanoTime()
-    val result = withZeroItems match {
-      case 0 => NMFImp.run(graph, maxIteration, theta, lambda, reducedDim)
-      case 1 => NMFImp.runWithZero(graph, maxIteration, theta, lambda, reducedDim)
-    }
+    /**
+     * Eecute the matrix factorization Method
+     */
+    val result = NMFImp.run(graph, maxIteration, learnRate, reg, reducedDim)
     val estimatedTime = System.nanoTime() - startTime;
     println("algorithm running time:\t" + TimeUnit.NANOSECONDS.toSeconds(estimatedTime))
 
-    deleteDir(new File(output))
-    result.vertices.sortBy(_._1, true).saveAsTextFile(output)
-    //val a1 = result.vertices.sortBy(_._1,true).map(v=>(v._1,v._2._1))
-    //val a2 = result.vertices.sortBy(_._1,true).map(v=>(v._1,v._2._2))
-    // a1.saveAsTextFile(output)
-    //a2.saveAsTextFile(output+"0")
-
-    //    val out = new PrintWriter(output)
-    //    out.println(result.vertices.collect().sortWith((VD1, VD2) => VD1._1 < VD2._1).mkString("\n"))
-    //    out.println(result.vertices.collect().mkString("\n"))
-    //    out.close()
+    /**
+     * save the result matrix to hdfs
+     */
+    result.vertices.filter(_._1 < 0).sortBy(_._1, false).saveAsTextFile(output + "H")
+    result.vertices.filter(_._1 > 0).sortBy(_._1, true).saveAsTextFile(output + "W")
     sc.stop()
   }
 }
