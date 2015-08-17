@@ -1,4 +1,4 @@
-[info] Updating {file:/E:/jianguoyun/my/code/scala/bda/graphx-alg/project/}graphx-alg-build...
+[info] Updating {file:/E:/jianguoyun/my/code/scala/graphx-alg/project/}graphx-alg-build...
 [debug] :: resolving dependencies :: default#graphx-alg-build;0.1-SNAPSHOT
 [debug] 	confs: [compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool]
 [debug] 	validate = true
@@ -2163,19 +2163,19 @@
 [debug] 	[NOT REQUIRED] org.scala-sbt#apply-macro;0.13.8!apply-macro.jar
 [debug] 	[NOT REQUIRED] org.scala-lang#jline;2.10.4!jline.jar
 [debug] 	[NOT REQUIRED] org.fusesource.jansi#jansi;1.4!jansi.jar
-[debug] :: resolution report :: resolve 6740ms :: artifacts dl 194ms
-[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT compile produced in E:\jianguoyun\my\code\scala\bda\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-compile.xml
-[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT runtime produced in E:\jianguoyun\my\code\scala\bda\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-runtime.xml
-[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT test produced in E:\jianguoyun\my\code\scala\bda\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-test.xml
-[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT provided produced in E:\jianguoyun\my\code\scala\bda\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-provided.xml
-[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT optional produced in E:\jianguoyun\my\code\scala\bda\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-optional.xml
-[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT compile-internal produced in E:\jianguoyun\my\code\scala\bda\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-compile-internal.xml
-[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT runtime-internal produced in E:\jianguoyun\my\code\scala\bda\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-runtime-internal.xml
-[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT test-internal produced in E:\jianguoyun\my\code\scala\bda\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-test-internal.xml
-[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT plugin produced in E:\jianguoyun\my\code\scala\bda\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-plugin.xml
-[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT sources produced in E:\jianguoyun\my\code\scala\bda\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-sources.xml
-[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT docs produced in E:\jianguoyun\my\code\scala\bda\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-docs.xml
-[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT pom produced in E:\jianguoyun\my\code\scala\bda\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-pom.xml
-[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT scala-tool produced in E:\jianguoyun\my\code\scala\bda\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-scala-tool.xml
-[debug] 	resolve done (6740ms resolve - 194ms download)
+[debug] :: resolution report :: resolve 2665ms :: artifacts dl 92ms
+[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT compile produced in E:\jianguoyun\my\code\scala\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-compile.xml
+[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT runtime produced in E:\jianguoyun\my\code\scala\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-runtime.xml
+[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT test produced in E:\jianguoyun\my\code\scala\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-test.xml
+[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT provided produced in E:\jianguoyun\my\code\scala\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-provided.xml
+[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT optional produced in E:\jianguoyun\my\code\scala\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-optional.xml
+[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT compile-internal produced in E:\jianguoyun\my\code\scala\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-compile-internal.xml
+[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT runtime-internal produced in E:\jianguoyun\my\code\scala\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-runtime-internal.xml
+[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT test-internal produced in E:\jianguoyun\my\code\scala\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-test-internal.xml
+[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT plugin produced in E:\jianguoyun\my\code\scala\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-plugin.xml
+[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT sources produced in E:\jianguoyun\my\code\scala\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-sources.xml
+[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT docs produced in E:\jianguoyun\my\code\scala\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-docs.xml
+[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT pom produced in E:\jianguoyun\my\code\scala\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-pom.xml
+[debug] 	report for default#graphx-alg-build;0.1-SNAPSHOT scala-tool produced in E:\jianguoyun\my\code\scala\graphx-alg\project\target\resolution-cache\reports\default-graphx-alg-build-scala-tool.xml
+[debug] 	resolve done (2665ms resolve - 92ms download)
 [info] Done updating.
