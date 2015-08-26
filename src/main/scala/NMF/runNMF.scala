@@ -92,6 +92,13 @@ object runNMF {
     // save the result matrix to hdfs
     result.vertices.filter(_._1 < 0).sortBy(_._1, false).saveAsTextFile(output_pt + "H")
     result.vertices.filter(_._1 > 0).sortBy(_._1, true).saveAsTextFile(output_pt + "W")
+
+    //save the new edges to hdfs
+    /*result.vertices.filter(_._1 > 0).cartesian(result.vertices.filter(_._1 < 0)).map(a => {
+      val product = a._1._2.dot(a._2._2)
+      a._1._1.toString + " " + a._2._1.toString + " " + product.toString
+    }).saveAsTextFile(output_pt + "product")
+    */
     sc.stop()
   }
 }

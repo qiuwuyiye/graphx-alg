@@ -1,10 +1,9 @@
 package NMF
 
 import org.apache.spark.graphx._
-//import org.apache.spark.mllib.linalg.Vector
 import scala.reflect.ClassTag
 import scala.util.Random
-import org.apache.spark.util.Vector
+import bda.linalg.DenseVector
 
 
 /**
@@ -63,12 +62,12 @@ object NMFImp {
      * @param msgSum The combined message sum from other vertex
      * @return A new vector and it's the vertex's new attribute
      */
-    def updateVertex(id: VertexId, attri: Vector, msgSum: Vector): Vector = {
+    def updateVertex(id: VertexId, attri: DenseVector[Double], msgSum: DenseVector[Double]): DenseVector[Double] = {
       val scale = 1 - learn_rate * reg
-      val intercept = learn_rate * msgSum
-      val newV: Vector = scale * attri + intercept
+      val intercept = msgSum.*(learn_rate)
+      val newV: DenseVector[Double] = attri.*(scale) + intercept
       // set the negative value to zero
-      Vector(newV.elements.map(math.max(_, 0)))
+      newV.map(math.max(_, 0))
     }
 
     /**
@@ -76,8 +75,8 @@ object NMFImp {
      *
      * @param triplet [vertex attribute, edge attribute, message]
      */
-    def sendDeltaOfW(triplet: EdgeContext[Vector, Double, Vector]) {
-      triplet.sendToSrc((triplet.attr - triplet.srcAttr.dot(triplet.dstAttr)) * triplet.dstAttr)
+    def sendDeltaOfW(triplet: EdgeContext[DenseVector[Double], Double, DenseVector[Double]]) {
+      triplet.sendToSrc(triplet.dstAttr.*((triplet.attr - triplet.srcAttr.dot(triplet.dstAttr))))
     }
 
     /**
@@ -85,8 +84,8 @@ object NMFImp {
      *
      * @param triplet [vertex attribute, edge attribute, message]
      */
-    def sendDeltaOfH(triplet: EdgeContext[Vector, Double, Vector]) {
-      triplet.sendToDst((triplet.attr - triplet.srcAttr.dot(triplet.dstAttr)) * triplet.srcAttr)
+    def sendDeltaOfH(triplet: EdgeContext[DenseVector[Double], Double, DenseVector[Double]]) {
+      triplet.sendToDst(triplet.srcAttr.*(triplet.attr - triplet.srcAttr.dot(triplet.dstAttr)))
     }
 
     /**
@@ -95,24 +94,24 @@ object NMFImp {
      * @param b A vector
      * @return  Sum of a and b
      */
-    def messageCombiner(a: Vector, b: Vector): Vector = a + b
+    def messageCombiner(a: DenseVector[Double], b: DenseVector[Double]): DenseVector[Double] = a + b
 
     // Initiate each Vertex's vector W and vector H whose dimension is K
-    var curGraph: Graph[Vector, Double] = graph.mapVertices { (vid, vdata) =>
-      Vector(Array.fill(K)(Random.nextDouble))
+    var curGraph: Graph[DenseVector[Double], Double] = graph.mapVertices { (vid, vdata) =>
+      new DenseVector[Double](Array.fill(K)(Random.nextDouble))
     }.cache()
 
 
-    var delta: VertexRDD[Vector] = curGraph.aggregateMessages(sendDeltaOfW, messageCombiner).cache()
+    var delta: VertexRDD[DenseVector[Double]] = curGraph.aggregateMessages(sendDeltaOfW, messageCombiner).cache()
 
     // number of vertexes updated
     var n_update = delta.count()
     var iter: Int = 1
-    var prevGraph: Graph[Vector, Double] = null
+    var prevGraph: Graph[DenseVector[Double], Double] = null
     while (n_update > 0 && ((iter - 1) / 2 < maxIter)) {
       if ((iter - 1) % 2 == 0) {
         // Forward messages passing
-        val new_W: VertexRDD[Vector] = curGraph.vertices
+        val new_W: VertexRDD[DenseVector[Double]] = curGraph.vertices
           .innerJoin(delta)(updateVertex).cache()
         prevGraph = curGraph
         curGraph = curGraph.outerJoinVertices(new_W) { (vid, old, newOpt) =>
