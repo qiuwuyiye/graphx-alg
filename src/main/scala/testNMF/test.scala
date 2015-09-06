@@ -114,14 +114,6 @@ object test{
     println(sum1.max())
     println(sum1.min())
     println("this is rmse, max, min of the result!")
-    /*println("vali error:")
-    val sum2 = pairs.join(vali).map(a => (a._2._1._1.dot(a._2._1._2) - a._2._2)).cache()
-    println("rmse:")
-    println(sqrt(sum2.sum() / count) * 5)
-    println(sum2.max())
-    println(sum2.min())*/
-    //sum1.unpersist(blocking = false)
-    //sum2.unpersist(blocking = false)
     sc.stop()
   }
 }

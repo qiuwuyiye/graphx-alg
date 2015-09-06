@@ -20,14 +20,14 @@ object runPageRank {
    * @param n_partition  minimum partition size of edges
    */
   def loadEdgeFile(edge_pt: String,
-                   n_partition: Int = 2): Graph[Int, Double] = {
+                   n_partition: Int = 2): Graph[Double, Double] = {
     val edges: RDD[Edge[Double]] = sc.textFile(edge_pt, n_partition).map { line =>
-      val Array(v1, v2, e) = line.trim().split("\\s+", 3)
-      Edge(v1.toLong, v2.toLong, e.toDouble)
+      val Array(v1, v2) = line.trim().split("\\s+", 2)
+      Edge(v1.toLong, v2.toLong, 1)
     }
 
-    Graph.fromEdges(edges, 0, StorageLevel.MEMORY_AND_DISK,
-      StorageLevel.MEMORY_AND_DISK).partitionBy(PartitionStrategy.RandomVertexCut)
+    Graph.fromEdges(edges, 0.0, StorageLevel.MEMORY_ONLY,
+      StorageLevel.MEMORY_ONLY).partitionBy(PartitionStrategy.RandomVertexCut)
   }
 
 
@@ -63,6 +63,7 @@ object runPageRank {
       } text ("output_pt is the output_pt file that stores two vertex attribute(the pagerank value)")
     }
     val para: Conf = parser.parse(args, Conf()).get
+
     val edges_pt = para.edges_pt
     val reset_prob = para.reset_prob
     val maxIter = para.maxIter
@@ -70,12 +71,18 @@ object runPageRank {
     val partitions = para.partitions
     val tol = para.tol
 
-    val graph = loadEdgeFile(edges_pt, partitions)
+    /*val edges_pt = "/a.txt"
+    val reset_prob = 0.15
+    val maxIter = 20
+    val output = "./b.txt"
+    val partitions = 1
+    val tol = 0.001*/
 
-    val result: Graph[(Double, Double), Double] = IctPageRank.run(graph, maxIter, reset_prob, tol)
+    val graph: Graph[Double, Double] = loadEdgeFile(edges_pt, partitions)
 
-    result.vertices.map(vdata => (vdata._1, vdata._2._1)).saveAsTextFile(output)
 
+    val result: Graph[Double, Double] = IctPageRank.run(graph, maxIter, reset_prob, tol)
+    result.vertices.sortBy(a => a._2, ascending = false).map(vdata => (vdata._1, vdata._2)).saveAsTextFile(output)
     sc.stop()
   }
 }
